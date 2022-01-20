@@ -13,3 +13,4 @@
 #################################################################################
 # expose selected objects in package namespace
 from .workflow import ManagedWorkflow
+from .prescient_result_analysis import NetworkData, PrescientSimulationData, Visualizer
