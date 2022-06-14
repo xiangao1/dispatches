@@ -27,7 +27,7 @@ def submit_job(
             + "#$ -q long\n"
             + f"#$ -N re-sim_{sim_id}\n"
             + "conda activate dispatches-dev-3.7\n"
-            + "module load gurobi/9.1.2\n"
+            + "module load gurobi/9.5.1\n"
             + f"python ./run_double_loop.py --sim_id {sim_id} --wind_pmax {wind_pmax} --battery_energy_capacity {battery_energy_capacity} --battery_pmax {battery_pmax} --n_scenario {n_scenario} --participation_mode {participation_mode}"
         )
 

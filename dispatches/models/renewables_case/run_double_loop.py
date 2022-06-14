@@ -309,11 +309,11 @@ prescient_options = {
     "ruc_horizon": 48,
     "compute_market_settlements": True,
     "day_ahead_pricing": "LMP",
-    "ruc_mipgap": 0.05,
+    "ruc_mipgap": 0.01,
     "symbolic_solver_labels": True,
     "reserve_factor": reserve_factor,
-    "deterministic_ruc_solver": "gurobi",
-    "sced_solver": "gurobi",
+    "deterministic_ruc_solver": "gurobi_direct",
+    "sced_solver": "gurobi_direct",
     "plugin": {
         "doubleloop": {
             "module": plugin_module,
