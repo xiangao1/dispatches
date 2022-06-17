@@ -83,6 +83,7 @@ class MultiPeriodWindBattery:
         wind_pmax_mw=200,
         battery_pmax_mw=25,
         battery_energy_capacity_mwh=100,
+        soc_violation_penalty=0,
     ):
         """
         Arguments:
@@ -100,6 +101,8 @@ class MultiPeriodWindBattery:
         self._wind_pmax_mw = wind_pmax_mw
         self._battery_pmax_mw = battery_pmax_mw
         self._battery_energy_capacity_mwh = battery_energy_capacity_mwh
+
+        self._soc_violation_penalty = soc_violation_penalty
 
         self.result_list = []
 
@@ -136,13 +139,27 @@ class MultiPeriodWindBattery:
 
         active_blks = blk.windBattery.get_active_process_blocks()
 
+        # create lb on soc
+        def state_of_charge_lb_rule(b):
+            return (
+                b.fs.battery.state_of_charge[0] + b.fs.battery._soc_slack
+                >= 0.1 * b.fs.battery.nameplate_energy
+            )
+
+        for b in active_blks:
+            b.fs.battery._soc_slack = pyo.Var(initialize=0, within=pyo.NonNegativeReals)
+            b._BatterySocLowerBound = pyo.Constraint(rule=state_of_charge_lb_rule)
+
         # create expression that references underlying power variables in multi-period rankine
         blk.HOUR = pyo.Set(initialize=range(horizon))
         blk.P_T = pyo.Expression(blk.HOUR)
         blk.tot_cost = pyo.Expression(blk.HOUR)
         for (t, b) in enumerate(active_blks):
             blk.P_T[t] = (b.fs.splitter.grid_elec[0] + b.fs.battery.elec_out[0]) * 1e-3
-            blk.tot_cost[t] = b.fs.windpower.op_total_cost
+            blk.tot_cost[t] = (
+                b.fs.windpower.op_total_cost
+                + b.fs.battery._soc_slack * self._soc_violation_penalty
+            )
 
         return
 
@@ -180,7 +197,9 @@ class MultiPeriodWindBattery:
     def _get_capacity_factors(self, b):
 
         horizon_len = len(b.windBattery.get_active_process_blocks())
-        ans = self._wind_capacity_factors[pyo.value(b._time_idx) : pyo.value(b._time_idx) + horizon_len]
+        ans = self._wind_capacity_factors[
+            pyo.value(b._time_idx) : pyo.value(b._time_idx) + horizon_len
+        ]
 
         return ans
 

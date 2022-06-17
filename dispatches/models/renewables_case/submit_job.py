@@ -35,16 +35,16 @@ def submit_job(
 
 
 if __name__ == "__main__":
-    
+
     from itertools import product
 
     sim_id = 0
     reserve_factor = 0.0
 
     wind_pmax_list = list(range(50, 550, 50))
-    
+
     # pmax_ratio: battery_power_pmax/wind_pmax
-    pmax_ratio_list = [r/10 for r in range(2, 12, 2)]
+    pmax_ratio_list = [r / 10 for r in range(2, 12, 2)]
 
     # battery size in hour
     battery_size = 4
@@ -52,7 +52,9 @@ if __name__ == "__main__":
     n_scenario_list = [3, 5, 8, 10]
     participation_modes = ["Bid", "SelfSchedule"]
 
-    spec_comb_product = product(wind_pmax_list, pmax_ratio_list, n_scenario_list, participation_modes)
+    spec_comb_product = product(
+        wind_pmax_list, pmax_ratio_list, n_scenario_list, participation_modes
+    )
 
     for wind_pmax, p_max_ratio, n_scenario, pm in spec_comb_product:
 
@@ -67,6 +69,6 @@ if __name__ == "__main__":
             n_scenario=n_scenario,
             participation_mode=pm,
             reserve_factor=reserve_factor,
-            )
+        )
 
         sim_id += 1
