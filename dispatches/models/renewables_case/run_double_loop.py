@@ -1,9 +1,7 @@
 from prescient.simulator import Prescient
 from types import ModuleType
 from optparse import OptionParser
-from dispatches.models.renewables_case.wind_battery_double_loop import (
-    MultiPeriodWindBattery,
-)
+from wind_battery_double_loop import MultiPeriodWindBattery
 from idaes.apps.grid_integration import (
     Tracker,
     DoubleLoopCoordinator,
@@ -111,9 +109,7 @@ capacity_factor_df = pd.read_csv(os.path.join(this_file_path, "capacity_factors.
 gen_capacity_factor = list(capacity_factor_df[wind_generator])[24:]
 
 # NOTE: `rts_gmlc_data_dir` should point to a directory containing RTS-GMLC scenarios
-rts_gmlc_data_dir = (
-    "/afs/crc.nd.edu/user/x/xgao1/DowlingLab/RTS-GMLC/RTS_Data/SourceData"
-)
+rts_gmlc_data_dir = "/afs/crc.nd.edu/user/x/xgao1/DowlingLab/RTS-GMLC/RTS_Data/SourceData"
 output_dir = f"sim_{sim_id}_results"
 
 solver = pyo.SolverFactory("gurobi")
@@ -217,7 +213,6 @@ mp_wind_battery_bid = MultiPeriodWindBattery(
     wind_pmax_mw=wind_pmax,
     battery_pmax_mw=battery_pmax,
     battery_energy_capacity_mwh=battery_energy_capacity,
-    soc_violation_penalty=1000,
 )
 
 backcaster = Backcaster(historical_da_prices, historical_rt_prices)
