@@ -1,7 +1,9 @@
 from prescient.simulator import Prescient
 from types import ModuleType
 from optparse import OptionParser
-from wind_battery_double_loop import MultiPeriodWindBattery
+from dispatches.models.renewables_case.wind_battery_double_loop import (
+    MultiPeriodWindBattery,
+)
 from idaes.apps.grid_integration import (
     Tracker,
     DoubleLoopCoordinator,
@@ -109,8 +111,10 @@ capacity_factor_df = pd.read_csv(os.path.join(this_file_path, "capacity_factors.
 gen_capacity_factor = list(capacity_factor_df[wind_generator])[24:]
 
 # NOTE: `rts_gmlc_data_dir` should point to a directory containing RTS-GMLC scenarios
-rts_gmlc_data_dir = "/afs/crc.nd.edu/user/x/xgao1/DowlingLab/RTS-GMLC/RTS_Data/SourceData"
-output_dir = f"sim_{sim_id}_results"
+rts_gmlc_data_dir = (
+    "/afs/crc.nd.edu/user/x/xgao1/DowlingLab/RTS-GMLC/RTS_Data/SourceData"
+)
+output_dir = f"batch_3_sim_{sim_id}_results"
 
 solver = pyo.SolverFactory("gurobi")
 
@@ -313,6 +317,7 @@ prescient_options = {
     "symbolic_solver_labels": True,
     "reserve_factor": reserve_factor,
     "deterministic_ruc_solver": "gurobi_direct",
+    "deterministic_ruc_solver_options":{"threads":4,},
     "sced_solver": "gurobi_direct",
     "plugin": {
         "doubleloop": {
